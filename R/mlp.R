@@ -115,7 +115,7 @@ mlp <- function(y,m=frequency(y),hd=NULL,reps=20,comb=c("median","mean","mode"),
           stop("Previous model xreg specification and new xreg inputs do not match.")
         }
       } else {
-        stop("model must be an mlp object, the output of the mlp() function.")
+        stop("model must be a mlp object, the output of the mlp() function.")
       }
     } else {
       oldmodel <- FALSE
@@ -309,7 +309,7 @@ preprocess <- function(y,m,lags,keep,difforder,sel.lag,allow.det.season,det.type
 # Pre-process data for MLP and ELM
 
   # Check seasonality & trend
-  cma <- cmav(y,ma=max(ff))
+  cma <- tsutils::cmav(y,ma=max(ff))
   st <- seasoncheck(y,m=max(ff),cma=cma)
   if (is.null(st$season.exist)){
     st$season.exist <- FALSE
@@ -489,11 +489,14 @@ preprocess <- function(y,m,lags,keep,difforder,sel.lag,allow.det.season,det.type
             ff.n.det <- length(ff.det)
             Xd <- vector("list",ff.n.det)
             for (s in 1:ff.n.det){
-                Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type=det.type)
-                colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
-                if (det.type=="trg"){
-                    Xd[[s]] <- Xd[[s]][,1:2]
-                }
+              if (det.type=="trg"){
+                # There was a problem when the fractional seasonalities were < 3, so this is now separated
+                Xd[[s]] <- tsutils::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+                Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
+              } else {
+                Xd[[s]] <- tsutils::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
+              }
+              colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
             }
         }
     }
@@ -546,14 +549,13 @@ ndiffs.net <- function(difforder,y,ff,st){
             m.seas <- TRUE
           } else {
             # Test can only run if there are at least three seasons
-            m.seas <- mseastest(y,m=max(ff),cma=cma)$is.multiplicative
+            m.seas <- tsutils::mseastest(y,m=max(ff),cma=cma)$is.multiplicative
           }
           if (m.seas == TRUE){
             y.dt <- y/cma
           } else {
             y.dt <- y-cma
           }
-          # Check if unit-root stochastic
           d.order <- forecast::nsdiffs(ts(y.dt,frequency=max(ff)),test="ch")
           if (d.order > 0){
             difforder <- c(difforder,max(ff))
@@ -575,7 +577,7 @@ ndiffs.net <- function(difforder,y,ff,st){
 seas.dum.net <- function(st,difforder,det.type,ff,ff.n,Y,y,allow.det.season){
 # Create seasonal dummies for networks
 
-  if (if(ff.n > 1){TRUE}else{!any(difforder == max(ff))}
+  if ((if(ff.n > 1){TRUE}else{!any(difforder == max(ff))})
       & frequency(y)>1 & st$season.exist==TRUE & allow.det.season==TRUE){
     sdummy <- TRUE
     # Set type of seasonal dummies
@@ -588,11 +590,15 @@ seas.dum.net <- function(st,difforder,det.type,ff,ff.n,Y,y,allow.det.season){
     }
     Xd <- vector("list",ff.n)
     for (s in 1:ff.n){
-      Xd[[s]] <- seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type=det.type)
-      colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
       if (det.type=="trg"){
-        Xd[[s]] <- Xd[[s]][,1:2]
+
+        # There was a problem when the fractional seasonalities were < 3, so this is now separated
+        Xd[[s]] <- tsutils::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="trg",full=TRUE)
+        Xd[[s]] <- Xd[[s]][,1:min(length(Xd[[s]][1,]),2)]
+      } else {
+        Xd[[s]] <- tsutils::seasdummy(length(Y),y=ts(Y,end=end(y),frequency=ff[s]),type="bin")
       }
+      colnames(Xd[[s]]) <- paste0("D",s,".",1:length(Xd[[s]][1,]))
     }
     # Xd <- do.call(cbind,Xd)
     # X <- cbind(X,Xd)
@@ -620,7 +626,7 @@ create.inputs <- function(y.sc,xreg.sc,lags,xreg.lags,n){
   }
   # Univariate
   if (all(ylags != 0)){
-    y.sc.lag <- lagmatrix(y.sc,unique(c(0,lags)))
+    y.sc.lag <- tsutils::lagmatrix(y.sc,unique(c(0,lags)))
     Y <- y.sc.lag[(lag.max+1):n,1,drop=FALSE]
     colnames(Y) <- "Y"
     X <- y.sc.lag[(lag.max+1):n,2:(length(lags)+1),drop=FALSE]
@@ -637,7 +643,7 @@ create.inputs <- function(y.sc,xreg.sc,lags,xreg.lags,n){
     Xreg <- vector("list",x.p)
     for (i in 1:x.p){
       if (length(xreg.lags[[i]]>0)){
-        Xreg[[i]] <- lagmatrix(xreg.sc[,i],xreg.lags[[i]])[(lag.max+1):x.n,,drop=FALSE]
+        Xreg[[i]] <- tsutils::lagmatrix(xreg.sc[,i],xreg.lags[[i]])[(lag.max+1):x.n,,drop=FALSE]
         colnames(Xreg[[i]]) <- paste0("Xreg.",i,".",xreg.lags[[i]])
       } else {
         Xreg[[i]] <- NULL
