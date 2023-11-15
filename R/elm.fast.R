@@ -17,28 +17,28 @@
 #'   The function \code{plot} produces a plot the network fit.
 #'   An object of class \code{"elm.fast"} is a list containing the following elements:
 #' \itemize{
-#' \item{\code{hd}{ - Number of hidden nodes. This is a vector with a different number for each training repetition.}}
-#' \item{\code{W.in}{ - Input weights for each training repetition.}}
-#' \item{\code{W}{ - Output layer weights for each repetition.}}
-#' \item{\code{b}{ - Output node bias for each training repetition.}}
-#' \item{\code{W.dct}{ - Direct connection weights argument if direct == TRUE for each training repetition. Otherwuse NULL.}}
-#' \item{\code{fitted.all}{ - Fitted values for each training repetition.}}
-#' \item{\code{fitted}{ - Ensemble fitted values.}}
-#' \item{\code{y}{ - Target variable.}}
-#' \item{\code{type}{ - Estimation used for output layer weights.}}
-#' \item{\code{comb}{ - Combination operator used.}}
-#' \item{\code{direct}{ - Presence of direct input-output connections.}}
-#' \item{\code{minmax}{ - If scaling is used this contains the scaling information for the target variable.}}
-#' \item{\code{minmax.x}{ - If scaling is used this contains the scaling information for the input variables.}}
-#' \item{\code{MSE}{ - In-sample Mean Squared Error.}}
+#' \item \code{hd} - Number of hidden nodes. This is a vector with a different number for each training repetition.
+#' \item \code{W.in} - Input weights for each training repetition.
+#' \item \code{W} - Output layer weights for each repetition.
+#' \item \code{b} - Output node bias for each training repetition.
+#' \item \code{W.dct} - Direct connection weights argument if direct == TRUE for each training repetition. Otherwuse NULL.
+#' \item \code{fitted.all} - Fitted values for each training repetition.
+#' \item \code{fitted} - Ensemble fitted values.
+#' \item \code{y} - Target variable.
+#' \item \code{type} - Estimation used for output layer weights.
+#' \item \code{comb} - Combination operator used.
+#' \item \code{direct} - Presence of direct input-output connections.
+#' \item \code{minmax} - If scaling is used this contains the scaling information for the target variable.
+#' \item \code{minmax.x} - If scaling is used this contains the scaling information for the input variables.
+#' \item \code{MSE} - In-sample Mean Squared Error.
 #' }
 #'
 #' @author Nikolaos Kourentzes, \email{nikolaos@kourentzes.com}
 #' @seealso \code{\link{elm}}.
 #' @references
 #' \itemize{
-#' \item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
-#' \item{For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.}
+#' \item For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.
+#' \item For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.
 #' }
 #' @keywords mlp thief ts
 #' @note This implementation of ELM is more appropriate when the number of inputs is several hundreds. For time series modelling use \code{\link{elm}} instead.
@@ -161,7 +161,7 @@ elm.fast <- function(y,x,hd=NULL,type=c("lasso","ridge","step","ls"),reps=20,
     W[[r]] <- w.out[w.out != 0,, drop=FALSE]
 
     # Predict fitted values
-    Y.all[,r] <- predict.elm.fast.internal(x,W.in[[r]],W[[r]],B[r],W.dct[[r]],direct)
+    Y.all[,r] <- predictElmFastInternal(x,W.in[[r]],W[[r]],B[r],W.dct[[r]],direct)
 
     # Reverse scaling or apply logistic
     if (linscale){
@@ -224,8 +224,8 @@ fast.sig <- function(x){
 #'
 #' @return Returns a list with:
 #' \itemize{
-#' \item{\code{Y.hat}{ - Ensemble prediction.}}
-#' \item{\code{Y.all}{ - Predictions of each training repetition.}}
+#' \item \code{Y.hat} - Ensemble prediction.
+#' \item \code{Y.all} - Predictions of each training repetition.
 #' }
 #'
 #' @author Nikolaos Kourentzes, \email{nikolaos@kourentzes.com}
@@ -285,7 +285,7 @@ predict.elm.fast <- function(object,newx,na.rm=c(FALSE,TRUE),...){
 
     Y.all <- array(NA,c(n,reps))
     for (r in 1:reps){
-        Y.all[,r] <- predict.elm.fast.internal(newx,W.in[[r]],object$W[[r]],object$b[r],object$W.dct[[r]],object$direct)
+        Y.all[,r] <- predictElmFastInternal(newx,W.in[[r]],object$W[[r]],object$b[r],object$W.dct[[r]],object$direct)
 
         # Reverse scaling or apply logistic
         if (!is.null(minmax.y)){
@@ -358,7 +358,7 @@ print.elm.fast <- function(x, ...){
 
 }
 
-predict.elm.fast.internal <- function(x,w.in,w.out,b,w.dct,direct){
+predictElmFastInternal <- function(x,w.in,w.out,b,w.dct,direct){
   y <- fast.sig(cbind(1,x) %*% w.in) %*% w.out + b + if(direct!=TRUE){0}else{x %*% w.dct}
   return(y)
 }

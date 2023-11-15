@@ -27,37 +27,37 @@
 #'   The function \code{plot} produces a plot the network architecture.
 #'   \code{elm} contains:
 #' \itemize{
-#' \item{\code{net}{ - ELM networks. If it is of class "\code{elm.fast}" then this is NULL.}}
-#' \item{\code{hd}{ - Number of hidden nodes. If it is of class "\code{elm.fast}" this is a vector with a different number for each repetition.}}
-#' \item{\code{W.in}{ - NULL unless it is of class "\code{elm.fast}". Contains the input weights.}}
-#' \item{\code{W}{ - Output layer weights for each repetition.}}
-#' \item{\code{b}{ - Contains the output node bias for each training repetition.}}
-#' \item{\code{W.dct}{ - Contains the direct connection weights if argument direct == TRUE. Otherwise is NULL.}}
-#' \item{\code{lags}{ - Input lags used.}}
-#' \item{\code{xreg.lags}{ - \code{xreg} lags used.}}
-#' \item{\code{difforder}{ - Differencing used.}}
-#' \item{\code{sdummy}{ - Use of deterministic seasonality.}}
-#' \item{\code{ff}{ - Seasonal frequencies detected in data (taken from ts or msts object).}}
-#' \item{\code{ff.det}{ - Seasonal frequencies coded using deterministic dummies.}}
-#' \item{\code{det.type}{ - Type of determistic seasonality.}}
-#' \item{\code{y}{ - Input time series.}}
-#' \item{\code{minmax}{ - Scaling structure.}}
-#' \item{\code{xreg.minmax}{ - Scaling structure for xreg variables.}}
-#' \item{\code{comb}{ - Combination operator used.}}
-#' \item{\code{type}{ - Estimation used for output layer weights.}}
-#' \item{\code{direct}{ - Presence of direct input-output connections.}}
-#' \item{\code{fitted}{ - Fitted values.}}
-#' \item{\code{MSE}{ - In-sample Mean Squared Error.}}
+#' \item \code{net} - ELM networks. If it is of class "\code{elm.fast}" then this is NULL.
+#' \item \code{hd} - Number of hidden nodes. If it is of class "\code{elm.fast}" this is a vector with a different number for each repetition.
+#' \item \code{W.in} - NULL unless it is of class "\code{elm.fast}". Contains the input weights.
+#' \item \code{W} - Output layer weights for each repetition.
+#' \item \code{b} - Contains the output node bias for each training repetition.
+#' \item \code{W.dct} - Contains the direct connection weights if argument direct == TRUE. Otherwise is NULL.
+#' \item \code{lags} - Input lags used.
+#' \item \code{xreg.lags} - \code{xreg} lags used.
+#' \item \code{difforder} - Differencing used.
+#' \item \code{sdummy} - Use of deterministic seasonality.
+#' \item \code{ff} - Seasonal frequencies detected in data (taken from ts or msts object).
+#' \item \code{ff.det} - Seasonal frequencies coded using deterministic dummies.
+#' \item \code{det.type} - Type of determistic seasonality.
+#' \item \code{y} - Input time series.
+#' \item \code{minmax} - Scaling structure.
+#' \item \code{xreg.minmax} - Scaling structure for xreg variables.
+#' \item \code{comb} - Combination operator used.
+#' \item \code{type} - Estimation used for output layer weights.
+#' \item \code{direct} - Presence of direct input-output connections.
+#' \item \code{fitted} - Fitted values.
+#' \item \code{MSE} - In-sample Mean Squared Error.
 #' }
 #'
 #' @author Nikolaos Kourentzes, \email{nikolaos@kourentzes.com}
 #' @seealso \code{\link{forecast.elm}}, \code{\link{elm.thief}}, \code{\link{mlp}}.
 #' @references
 #' \itemize{
-#' \item{For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{https://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.}
-#' \item{For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.}
-#' \item{For variable selection see: Crone S.F., Kourentzes N. (2010) \href{https://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction – A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.}
-#' \item{For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.}
+#' \item For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{https://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.
+#' \item For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.
+#' \item For variable selection see: Crone S.F., Kourentzes N. (2010) \href{https://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction – A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.
+#' \item For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.
 #' }
 #' @keywords mlp thief ts
 #' @note To use elm with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package) see \code{\link{elm.thief}}.
@@ -210,7 +210,7 @@ elm <- function(y,m=frequency(y),hd=NULL,type=c("lasso","ridge","step","lm"),rep
       B <- model$b
       W.dct <- model$W.dct
       for (r in 1:reps){
-        Yhat[,r] <- predict.elm.fast.internal(X,W.in[[r]],W[[r]],B[r],W.dct[[r]],direct)
+        Yhat[,r] <- predictElmFastInternal(X,W.in[[r]],W[[r]],B[r],W.dct[[r]],direct)
       }
 
     }

@@ -251,7 +251,7 @@ forecast.net <- function(object,h=NULL,y=NULL,xreg=NULL,...){
       } else {
         # EML
         if (is.elm.fast){
-          yhat.sc <- predict.elm.fast.internal(xi,W.in[[r]],W[[r]],b[r],W.dct[[r]],direct)
+          yhat.sc <- predictElmFastInternal(xi,W.in[[r]],W[[r]],b[r],W.dct[[r]],direct)
         } else {
           H <- t(as.matrix(tail(neuralnet::compute(net,xi,r)$neurons,1)[[1]][,2:(tail(hd,1)+1)]))
           yhat.sc <- H %*% W[[r]] + b[r] + if(direct!=TRUE){0}else{xi %*% W.dct[[r]]}

@@ -1,3 +1,7 @@
+# CHANGED IN NNFOR VERSION 0.9.9 (12 NOV 2023)
+- Fix package documentation.
+- Renamed internal function predict.elm.fast.internal to predictElmFastInternal to avoid S# method confusion.
+
 # CHANGED IN NNFOR VERSION 0.9.7 (07 JUL 2022)
 - Added warning when predict() is called for ELM and MLP. 
 
