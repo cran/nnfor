@@ -6,7 +6,7 @@
 \usage{
 elm(
   y,
-  m = frequency(y),
+  m = NULL,
   hd = NULL,
   type = c("lasso", "ridge", "step", "lm"),
   reps = 20,
@@ -14,27 +14,27 @@ elm(
   lags = NULL,
   keep = NULL,
   difforder = NULL,
-  outplot = c(FALSE, TRUE),
-  sel.lag = c(TRUE, FALSE),
-  direct = c(FALSE, TRUE),
-  allow.det.season = c(TRUE, FALSE),
+  outplot = FALSE,
+  sel.lag = TRUE,
+  direct = FALSE,
+  allow.det.season = TRUE,
   det.type = c("auto", "bin", "trg"),
   xreg = NULL,
   xreg.lags = NULL,
   xreg.keep = NULL,
-  barebone = c(FALSE, TRUE),
+  barebone = FALSE,
   model = NULL,
-  retrain = c(FALSE, TRUE)
+  retrain = FALSE
 )
 }
 \arguments{
 \item{y}{Input time series. Can be ts or msts object.}
 
-\item{m}{Frequency of the time series. By default it is picked up from y.}
+\item{m}{Seasonal period(s) of the series. Use a vector for multiple seasonalities, e.g. \code{c(7, 365.25)}. If NULL (default) they are taken from \code{y}: its frequency for a ts object, or all seasonal periods for an msts object. When given, \code{m} overrides the periods of \code{y} for lag specification, seasonality and differencing tests and seasonal dummies.}
 
 \item{hd}{Number of hidden nodes. This can be a vector, where each number represents the number of hidden nodes of a different hidden layer. Use NULL to automatically specify.}
 
-\item{type}{Estimation type for output layer weights. Can be "lasso" (lasso with CV), "ridge" (ridge regression with CV), "step" (stepwise regression with AIC) or "lm" (linear regression).}
+\item{type}{Estimation type for output layer weights. Can be "lasso" (lasso with CV), "ridge" (ridge regression with CV), "step" (stepwise regression with AIC) or "lm" (linear regression; "ls" is accepted as a synonym).}
 
 \item{reps}{Number of networks to train, the result is the ensemble forecast.}
 
@@ -46,7 +46,7 @@ elm(
 
 \item{difforder}{Vector including the differencing lags. For example c(1,12) will apply first and seasonal (12) differences. For no differencing use 0. For automatic selection use NULL.}
 
-\item{outplot}{Provide plot of model fit. Can be TRUE or FALSE.}
+\item{outplot}{Provide plot of model fit. Can be TRUE or FALSE. For a customised plot use \code{plot(fit, which = "fit", ...)} after fitting.}
 
 \item{sel.lag}{Automatically select lags. Can be TRUE or FALSE.}
 
@@ -62,38 +62,39 @@ elm(
 
 \item{xreg.keep}{List of logical vectors to force lags of xreg to stay in the model if sel.lag == TRUE. If NULL then all exogenous lags can be removed.}
 
-\item{barebone}{Use an alternative elm implementation (written in R) that is faster when the number of inputs is very high. Typically not needed.}
+\item{barebone}{Use an alternative elm implementation (written in R) that is faster when the number of inputs is very high. Typically not needed. Supports a single hidden layer only.}
 
-\item{model}{A previously trained mlp object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.}
+\item{model}{A previously trained elm object. If this is provided then the same model is fitted to y, without re-estimating any model parameters.}
 
 \item{retrain}{If a previous model is provided, retrain the network or not. If the network is retrained the size of the hidden layer is reset.}
 }
 \value{
 Return object of class \code{elm}. If barebone == TRUE then the object inherits a second class "\code{elm.fast}".
-  The function \code{plot} produces a plot the network architecture.
+  The function \code{plot} produces a plot the network architecture or of the fit (see \code{\link{plot.elm}}).
   \code{elm} contains:
 \itemize{
-\item \code{net} - ELM networks. If it is of class "\code{elm.fast}" then this is NULL.
-\item \code{hd} - Number of hidden nodes. If it is of class "\code{elm.fast}" this is a vector with a different number for each repetition.
-\item \code{W.in} - NULL unless it is of class "\code{elm.fast}". Contains the input weights.
-\item \code{W} - Output layer weights for each repetition.
-\item \code{b} - Contains the output node bias for each training repetition.
-\item \code{W.dct} - Contains the direct connection weights if argument direct == TRUE. Otherwise is NULL.
-\item \code{lags} - Input lags used.
-\item \code{xreg.lags} - \code{xreg} lags used.
-\item \code{difforder} - Differencing used.
-\item \code{sdummy} - Use of deterministic seasonality.
-\item \code{ff} - Seasonal frequencies detected in data (taken from ts or msts object).
-\item \code{ff.det} - Seasonal frequencies coded using deterministic dummies.
-\item \code{det.type} - Type of determistic seasonality.
-\item \code{y} - Input time series.
-\item \code{minmax} - Scaling structure.
-\item \code{xreg.minmax} - Scaling structure for xreg variables.
-\item \code{comb} - Combination operator used.
-\item \code{type} - Estimation used for output layer weights.
-\item \code{direct} - Presence of direct input-output connections.
-\item \code{fitted} - Fitted values.
-\item \code{MSE} - In-sample Mean Squared Error.
+\item \code{net}: ELM networks. If it is of class "\code{elm.fast}" then this is NULL.
+\item \code{hd}: Number of hidden nodes. If it is of class "\code{elm.fast}" this is a vector with a different number for each repetition.
+\item \code{W.in}: NULL unless it is of class "\code{elm.fast}". Contains the input weights.
+\item \code{W}: Output layer weights for each repetition.
+\item \code{b}: Contains the output node bias for each training repetition.
+\item \code{W.dct}: Contains the direct connection weights if argument direct == TRUE. Otherwise is NULL.
+\item \code{lags}: Input lags used.
+\item \code{xreg.lags}: \code{xreg} lags used.
+\item \code{difforder}: Differencing used.
+\item \code{sdummy}: Use of deterministic seasonality.
+\item \code{ff}: Seasonal periods modelled (\code{m}, or those of \code{y}).
+\item \code{ff.det}: Seasonal frequencies coded using deterministic dummies.
+\item \code{det.type}: Type of determistic seasonality.
+\item \code{y}: Input time series.
+\item \code{minmax}: Scaling structure.
+\item \code{xreg.minmax}: Scaling structure for xreg variables.
+\item \code{comb}: Combination operator used.
+\item \code{type}: Estimation used for output layer weights.
+\item \code{direct}: Presence of direct input-output connections.
+\item \code{fitted}: Fitted values.
+\item \code{MSE}: In-sample Mean Squared Error.
+\item \code{fitted.all}: Fitted values of each ensemble member.
 }
 }
 \description{
@@ -101,8 +102,18 @@ This function fits ELM neural networks for time series forecasting.
 }
 \note{
 To use elm with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package) see \code{\link{elm.thief}}.
-  The elm function by default calls the \code{neuralnet} function. If barebone == TRUE then it uses an alternative implementation (\code{TStools:::elm.fast}) which is more appropriate when the number of inputs is several hundreds.
+  The elm function by default calls the \code{neuralnet} function. If barebone == TRUE then it uses an alternative implementation (\code{\link{elm.fast}}) which is more appropriate when the number of inputs is several hundreds.
 }
+\section{Parallel training}{
+
+Ensemble members can be trained in parallel with
+\code{options(nnfor.cores = 4)} (forked workers on Linux and macOS) or
+\code{options(nnfor.cores = cl)} with a cluster from
+\code{parallel::makeCluster()}, which is recommended on Windows. All random
+numbers are drawn before members are dispatched, so results are identical
+for any number of cores and reproducible with \code{set.seed()}.
+}
+
 \examples{
 \dontshow{
  fit <- elm(AirPassengers,reps=1)
@@ -116,13 +127,79 @@ To use elm with Temporal Hierarchies (\href{https://cran.r-project.org/package=t
  frc <- forecast(fit,h=36)
  plot(frc)
 }
+\dontrun{
+# Data for the examples with exogenous regressors (xreg): a promotion
+# indicator and a slowly moving price. xreg must cover the sample and the
+# forecast horizon.
+set.seed(1)
+h <- 12
+n <- length(AirPassengers)
+z <- cbind(promo = rbinom(n + h, 1, 0.2),
+           price = 50 + cumsum(rnorm(n + h)))
+y <- AirPassengers + 30 * z[1:n, "promo"] - 2 * z[1:n, "price"]
+
+# Regressors with automatic lags: each starts from the same candidate lags
+# as y (here 1 to 12, so not lag 0, the current value of the regressor) and
+# lag selection keeps the useful ones
+fit <- elm(y, xreg = z)
+print(fit)
+# Forecasting needs the future values of the regressors
+frc <- forecast(fit, h = h, xreg = z)
+
+# Lags for each regressor, one vector per column of xreg, and lags kept
+# whatever the lag selection says: promo at lag 0, price at lag 0
+fit <- elm(y, xreg = z, xreg.lags = list(0, 0:2),
+           xreg.keep = list(TRUE, c(TRUE, FALSE, FALSE)))
+
+# Use exactly the lags given, without lag selection
+fit <- elm(y, xreg = z, xreg.lags = list(0, 1:3), sel.lag = FALSE)
+
+# Regressors as the only inputs: no lags of y (lags = 0)
+fit <- elm(y, xreg = z, lags = 0, xreg.lags = list(0, 0:2), sel.lag = FALSE)
+
+# Number of hidden nodes (hd); by default it depends on the sample size
+fit <- elm(AirPassengers, hd = 50)          # one hidden layer of 50 nodes
+fit <- elm(AirPassengers, hd = c(30, 10))   # two random hidden layers
+plot(fit)  # hidden nodes that the output layer does not use are dashed
+
+# Estimation of the output weights: "lasso" (default), "ridge", "step"
+# (stepwise regression) or "lm"
+fit <- elm(AirPassengers, type = "ridge")
+fit <- elm(AirPassengers, type = "step")
+
+# Direct connections from the inputs to the output, besides the hidden layer
+fit <- elm(AirPassengers, direct = TRUE)
+
+# The fast implementation, for many inputs; also returns an elm object
+fit <- elm(AirPassengers, barebone = TRUE)
+
+# Save a fitted network and use it later
+fit <- elm(AirPassengers)
+file <- file.path(tempdir(), "elm_fit.rds")
+saveRDS(fit, file)
+fit <- readRDS(file)
+frc <- forecast(fit, h = 12)
+
+# Apply a network to new data without re-estimating it: a network fitted up
+# to 1958 is used on the full series
+fit.old <- elm(window(AirPassengers, end = c(1958, 12)))
+fit.new <- elm(AirPassengers, model = fit.old)
+# ...or keep its specification and re-estimate on the new data (the number
+# of hidden nodes is chosen again)
+fit.new <- elm(AirPassengers, model = fit.old, retrain = TRUE)
+
+# A reused network with regressors needs the regressors of the new data
+fit.old <- elm(window(y, end = c(1958, 12)), xreg = z, xreg.lags = list(0, 0:2))
+fit.new <- elm(y, model = fit.old, xreg = z)
+frc <- forecast(fit.new, h = h, xreg = z)
+}
 
 }
 \references{
 \itemize{
 \item For an introduction to neural networks see: Ord K., Fildes R., Kourentzes N. (2017) \href{https://kourentzes.com/forecasting/2017/10/16/new-forecasting-book-principles-of-business-forecasting-2e/}{Principles of Business Forecasting 2e}. \emph{Wessex Press Publishing Co.}, Chapter 10.
 \item For combination operators see: Kourentzes N., Barrow B.K., Crone S.F. (2014) \href{https://kourentzes.com/forecasting/2014/04/19/neural-network-ensemble-operators-for-time-series-forecasting/}{Neural network ensemble operators for time series forecasting}. \emph{Expert Systems with Applications}, \bold{41}(\bold{9}), 4235-4244.
-\item For variable selection see: Crone S.F., Kourentzes N. (2010) \href{https://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction – A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.
+\item For variable selection see: Crone S.F., Kourentzes N. (2010) \href{https://kourentzes.com/forecasting/2010/04/19/feature-selection-for-time-series-prediction-a-combined-filter-and-wrapper-approach-for-neural-networks/}{Feature selection for time series prediction -- A combined filter and wrapper approach for neural networks}. \emph{Neurocomputing}, \bold{73}(\bold{10}), 1923-1936.
 \item For ELMs see: Huang G.B., Zhou H., Ding X. (2006) Extreme learning machine: theory and applications. \emph{Neurocomputing}, \bold{70}(\bold{1}), 489-501.
 }
 }

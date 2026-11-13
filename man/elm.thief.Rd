@@ -2,7 +2,7 @@
 % Please edit documentation in R/net.thief.R
 \name{elm.thief}
 \alias{elm.thief}
-\title{ELM network for THieF.}
+\title{ELM network for THieF}
 \usage{
 elm.thief(y, h = NULL, ...)
 }
@@ -18,19 +18,19 @@ An object of classes "\code{forecast.net}" and "\code{forecast}".
   The function \code{plot} produces a plot of the forecasts.
   An object of class \code{"forecast.net"} is a list containing the following elements:
 \itemize{
-\item \code{method} - The name of the forecasting method as a character string.
-\item \code{mean} - Point forecasts as a time series.
-\item \code{all.mean} - An array h x reps of all ensemble members forecasts, where reps are the number of ensemble members.
-\item \code{x} - The original time series (either \code{fit} used to create the network.
-\item \code{fitted} - Fitted values. Any values not fitted for the initial period of the time series are imputted with NA.
-\item \code{residuals} - Residuals from the fitted network.
+\item \code{method}: The name of the forecasting method as a character string
+\item \code{mean}: Point forecasts as a time series
+\item \code{all.mean}: An array h x reps of all ensemble members forecasts, where reps are the number of ensemble members.
+\item \code{x}: The original time series (either \code{fit} used to create the network.
+\item \code{fitted}: Fitted values. Any values not fitted for the initial period of the time series are imputted with NA.
+\item \code{residuals}: Residuals from the fitted network.
 }
 }
 \description{
 Function for ELM forecasting with Temporal Hierarchies.
 }
 \note{
-This function is created to work with Temporal Hierarchied (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional ELM networks use \code{\link{elm}}.
+This function is created to work with Temporal Hierarchies (\href{https://cran.r-project.org/package=thief}{thief} package). For conventional ELM networks use \code{\link{elm}}.
 }
 \examples{
 \dontrun{

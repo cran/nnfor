@@ -2,9 +2,9 @@
 % Please edit documentation in R/elm.fast.R
 \name{predict.elm.fast}
 \alias{predict.elm.fast}
-\title{Predictions for ELM (fast) network.}
+\title{Predictions for ELM (fast) network}
 \usage{
-\method{predict}{elm.fast}(object, newx, na.rm = c(FALSE, TRUE), ...)
+\method{predict}{elm.fast}(object, newx, na.rm = FALSE, ...)
 }
 \arguments{
 \item{object}{ELM network object, produced using \code{\link{elm.fast}}.}
@@ -18,8 +18,8 @@
 \value{
 Returns a list with:
 \itemize{
-\item \code{Y.hat} - Ensemble prediction.
-\item \code{Y.all} - Predictions of each training repetition.
+\item \code{Y.hat}: Ensemble prediction.
+\item \code{Y.all}: Predictions of each training repetition.
 }
 }
 \description{

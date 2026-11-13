@@ -2,9 +2,9 @@
 % Please edit documentation in R/linscale.R
 \name{linscale}
 \alias{linscale}
-\title{Apply minmax linear scaling to a vector.}
+\title{Apply minmax linear scaling to a vector}
 \usage{
-linscale(x, minmax = NULL, rev = c(FALSE, TRUE))
+linscale(x, minmax = NULL, rev = FALSE)
 }
 \arguments{
 \item{x}{Input vector.}

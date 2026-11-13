@@ -2,7 +2,7 @@
 % Please edit documentation in R/forecast.net.R
 \name{forecast.elm}
 \alias{forecast.elm}
-\title{Forecast using ELM neural network.}
+\title{Forecast using ELM neural network}
 \usage{
 \method{forecast}{elm}(object, h = NULL, y = NULL, xreg = NULL, ...)
 }
@@ -22,12 +22,12 @@ An object of classes "\code{forecast.net}" and "\code{forecast}".
   The function \code{plot} produces a plot of the forecasts.
   An object of class \code{"forecast.net"} is a list containing the following elements:
 \itemize{
-\item \code{method} - The name of the forecasting method as a character string.
-\item \code{mean} - Point forecasts as a time series.
-\item \code{all.mean} - An array h x reps of all ensemble members forecasts, where reps are the number of ensemble members.
-\item \code{x} - The original time series used to create the network.
-\item \code{fitted} - Fitted values.
-\item \code{residuals} - Residuals from the fitted network.
+\item \code{method}: The name of the forecasting method as a character string
+\item \code{mean}: Point forecasts as a time series
+\item \code{all.mean}: An array h x reps of all ensemble members forecasts, where reps are the number of ensemble members.
+\item \code{x}: The original time series used to create the network.
+\item \code{fitted}: Fitted values.
+\item \code{residuals}: Residuals from the fitted network.
 }
 }
 \description{
@@ -45,6 +45,15 @@ Create forecasts using ELM neural networks.
  plot(fit)
  frc <- forecast(fit,h=36)
  plot(frc)
+}
+\dontrun{
+# Networks with regressors (xreg) need their values over the forecast horizon
+set.seed(1)
+z <- cbind(promo = rbinom(156, 1, 0.2))
+y <- AirPassengers + 30 * z[1:144, "promo"]
+fit <- elm(y, xreg = z, xreg.lags = list(0))
+frc <- forecast(fit, h = 12, xreg = z)
+plot(frc)
 }
 
 }
